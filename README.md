@@ -1,4 +1,8 @@
-# Valant
+# Valant Code Challenge
+
+A basic maze manager with unit testing implemented. It will process new mazes (and save them to a file), and will get available movements based on the current user position. It also validates maze grids to ensure a start and end position exist.
+
+## Original Instructions Below
 
 This project was generated using [Nx](https://nx.dev).
 
