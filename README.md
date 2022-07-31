@@ -1,6 +1,6 @@
 # Valant Code Challenge
 
-A basic maze manager with unit testing implemented. It will process new mazes (and save them to a file), and will get available movements based on the current user position. It also validates maze grids to ensure a start and end position exist.
+A basic maze manager with unit testing implemented. It will process new mazes (and save them to a file), and will get available movements based on the current user position. It also validates maze grids to ensure a start and end position exist. UI has a basic scaffold for the maze manager component but I did not have time to implement UI functionality.
 
 ## Original Instructions Below
 
