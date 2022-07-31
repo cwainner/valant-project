@@ -25,6 +25,7 @@ namespace ValantDemoApi
       {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "ValantDemoApi", Version = "v1" });
       });
+      services.AddSingleton<MazeManager>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

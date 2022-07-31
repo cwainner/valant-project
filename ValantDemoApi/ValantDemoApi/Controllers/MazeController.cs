@@ -4,21 +4,24 @@ using System.Collections.Generic;
 
 namespace ValantDemoApi.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class MazeController : ControllerBase
+  [ApiController]
+  [Route("[controller]")]
+  public class MazeController : ControllerBase
+  {
+    private readonly ILogger<MazeController> _logger;
+    private readonly MazeManager _manager;
+
+    public MazeController(ILogger<MazeController> logger, MazeManager manager)
     {
-        private readonly ILogger<MazeController> _logger;
-
-        public MazeController(ILogger<MazeController> logger)
-        {
-            _logger = logger;
-        }
-
-        [HttpGet]
-        public IEnumerable<string> GetNextAvailableMoves()
-        {
-          return new List<string> {"Up", "Down", "Left", "Right"};
-        }
+      _logger = logger;
+      _manager = manager;
     }
+
+    [HttpGet]
+    public IEnumerable<string> GetNextAvailableMoves()
+    {
+      return new List<string> { "Up", "Down", "Left", "Right" };
+    }
+
+  }
 }
