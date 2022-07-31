@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -48,6 +51,38 @@ OOOOXXXXXE"
 
       var result = await client.PostAsync("/addmaze", new StringContent(JObject.FromObject(json).ToString()));
       Assert.IsTrue(result.IsSuccessStatusCode);
+    }
+
+    [Test]
+    public async Task ShouldReturnAllMazes()
+    {
+      var toSend = new
+      {
+        mazeName = "Test Maze",
+        mazeGrid = @"SOXXXXXXXX
+OOOXXXXXXX
+OXOOOXOOOO
+XXXXOXOXXO
+OOOOOOOXXO
+OXXOXXXXXO
+OOOOXXXXXE"
+      };
+
+      var result = await client.PostAsync("/addmaze", new StringContent(JObject.FromObject(toSend).ToString()));
+      Assert.IsTrue(result.IsSuccessStatusCode);
+
+      result = await client.GetAsync("/allmazes");
+      Assert.IsTrue(result.IsSuccessStatusCode);
+
+      using (var reader = new StreamReader(result.Content.ReadAsStream()))
+      {
+        var json = await reader.ReadToEndAsync();
+        Console.WriteLine(json);
+        var mazes = JObject.Parse(json).Values<Maze>("mazes");
+
+        Assert.IsNotNull(mazes);
+        Assert.IsTrue(mazes.Count() > 0);
+      }
     }
   }
 }

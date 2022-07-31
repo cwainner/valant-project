@@ -36,29 +36,45 @@ namespace ValantDemoApi.Controllers
     [HttpPost("/addmaze")]
     public async Task<StatusCodeResult> AddNewMaze()
     {
-      using (var reader = new StreamReader(Request.Body))
+      try
       {
-        var json = await reader.ReadToEndAsync();
-        var jsonObject = JObject.Parse(json);
+        using (var reader = new StreamReader(Request.Body))
+        {
+          var json = await reader.ReadToEndAsync();
+          var jsonObject = JObject.Parse(json);
 
-        var mazeId = "";
-        if (jsonObject.ContainsKey("mazeId"))
-          mazeId = jsonObject.Value<string>("mazeId");
-        var mazeName = "";
-        if (jsonObject.ContainsKey("mazeName"))
-          mazeName = jsonObject.Value<string>("mazeName");
-        var mazeGrid = jsonObject.Value<string>("mazeGrid");
+          var mazeId = "";
+          if (jsonObject.ContainsKey("mazeId"))
+            mazeId = jsonObject.Value<string>("mazeId");
+          var mazeName = "";
+          if (jsonObject.ContainsKey("mazeName"))
+            mazeName = jsonObject.Value<string>("mazeName");
+          var mazeGrid = jsonObject.Value<string>("mazeGrid");
 
-        _logger.LogDebug($"Received request to add maze: {mazeGrid} ({mazeName} {mazeId})");
+          _logger.LogDebug($"Received request to add maze: {mazeGrid} ({mazeName} {mazeId})");
 
-        var rows = mazeGrid.Split(new[] { ",", "\n", "\n\r" }, System.StringSplitOptions.RemoveEmptyEntries);
-        var success = await _manager.AddNewMaze(new List<string>(rows), mazeName, mazeId);
+          var rows = mazeGrid.Split(new[] { ",", "\n", "\n\r" }, System.StringSplitOptions.RemoveEmptyEntries);
+          var success = await _manager.AddNewMaze(new List<string>(rows), mazeName, mazeId);
 
-        if (success)
-          return StatusCode((int)HttpStatusCode.OK);
-        else
-          return StatusCode((int)HttpStatusCode.BadRequest);
+          if (success)
+            return StatusCode((int)HttpStatusCode.OK);
+          else
+            return StatusCode((int)HttpStatusCode.BadRequest);
+        }
       }
+      catch (System.Exception ex)
+      {
+        _logger.LogError(ex, "Error processing new maze");
+        return StatusCode((int)HttpStatusCode.InternalServerError);
+      }
+    }
+
+    [HttpGet("/allmazes")]
+    public JsonResult GetAllMazes()
+    {
+      var allMazes = _manager.GetAllMazes();
+
+      return new JsonResult(new { mazes = allMazes });
     }
   }
 }
