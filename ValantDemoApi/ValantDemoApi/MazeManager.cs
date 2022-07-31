@@ -133,6 +133,8 @@ namespace ValantDemoApi
     public async Task<bool> AddNewMaze(List<string> mazeRows, string mazeName = null, string mazeId = null)
     {
       Dictionary<string, string> grid = new Dictionary<string, string>();
+      bool start = false;
+      bool end = false;
 
       for (int i = 0; i < mazeRows.Count; i++)
       {
@@ -143,13 +145,31 @@ namespace ValantDemoApi
         {
           var key = Maze.CoordinatesToKey(i, j);
           var cell = cells[j];
+
+          if (cell.Equals('s') || cell.Equals('S'))
+            start = true;
+          if (cell.Equals('e') || cell.Equals('E'))
+            end = true;
+
           grid.Add(key, cell.ToString());
         }
       }
 
       if (grid.Count > 0)
       {
-        _logger.LogDebug($"{grid.Count} cells found. Adding new maze");
+        _logger.LogDebug($"{grid.Count} cells found.");
+
+        if (!start)
+        {
+          _logger.LogWarning("No start position found for maze");
+          return false;
+        }
+        if (!end)
+        {
+          _logger.LogWarning("No end position found for maze");
+          return false;
+        }
+
         var maze = new Maze()
         {
           Id = mazeId ?? Guid.NewGuid().ToString(),
@@ -161,9 +181,14 @@ namespace ValantDemoApi
         {
           return await SerializeMazeToFile(maze);
         }
+        else
+          return false;
       }
-
-      return false;
+      else
+      {
+        _logger.LogWarning("No grid cells found for maze");
+        return false;
+      }
     }
 
     private async Task<bool> SerializeMazeToFile(Maze maze)
@@ -210,6 +235,7 @@ namespace ValantDemoApi
           }
         }
 
+        _logger.LogDebug("Maze successfully written to file");
         return true;
       }
       catch (Exception ex)
